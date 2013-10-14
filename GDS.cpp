@@ -1,12 +1,9 @@
-/*+--------------------------- *
- *|                           |*
- *|  File : GDS.cpp           |*
- *|                           |*
- *|  Data : 06/12/2011        |*
- *|  Type : Member Function   |*
- *|  Base : Noting            |*
- *|                           |*
- * --------------------------- */
+/*|=====================================
+ *|  Copyright (c) 2011-2013 hightoro 
+ *|  All rights reserved                          
+ *|=====================================
+ */
+
 using namespace std;
 
 #include "stdinclude.hpp"

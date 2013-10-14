@@ -1,21 +1,18 @@
+/*|=====================================
+ *|  Copyright (c) 2011-2013 hightoro 
+ *|  All rights reserved                          
+ *|=====================================
+ */
 #ifndef CLASS_GDS_H
 #define CLASS_GDS_H
-/*+--------------------------- *
- *|                           |*
- *|  File : GDS.hpp           |*
- *|                           |*
- *|  Data : 06/12/2011        |*
- *|  Type : Class Header      |*
- *|  Base : Nothing           |*
- *|                           |*
- * --------------------------- */
+
 namespace GDS {
 
   class LIB;   // Library
-  class STR;   // Structure ( some of LE )
-  class EL;    // Element ( some of Records )
-  class DATA;  // Records ( minimam 4 bytes )
-//class Byte;  // bytes( 8bit data )
+  class STR;   //  -Structure ( some of EL )
+  class EL;    //   -Element ( some of Record )
+  class DATA;  //    -Record ( minimam 4 bytes )
+//class Byte;  //      -bytes( 8bit data )
 
 
 //
