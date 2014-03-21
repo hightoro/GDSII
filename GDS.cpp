@@ -101,7 +101,7 @@ std::string DATA::get_name( )const
   std::string name_string;
 
   switch( RecordHeader_name_ )
-    {  
+    {
     case 0x00:
       name_string = "HEADER";
       break;
@@ -205,7 +205,7 @@ std::string DATA::get_type( )const
   std::string type_string;
 
   switch( RecordHeader_type_ )
-    {   
+    {
     case 0x00:
       type_string = "No_Data";
       break;
@@ -327,33 +327,38 @@ void DATA::show_name( )const
 void DATA::show_type( )const
 {
   std::cout << boost::format("(0x%02x)%-15s ")%(0xff & RecordHeader_type_) %get_type() << std::flush;
-} 
+}
 void DATA::show_data( )const
 {
-  switch( RecordHeader_type_ ){
+  switch( RecordHeader_type_ )
+    {
 
-  // Integer 2
-  case Integer_2 :
-    show_data_Integer2();
-    break;
-  // Integer 4
-  case Integer_4 :
-    show_data_Integer4();
-    break;
-  // String
-  case String :
-    show_data_String();
-    break;
-  // Other
-  default :
-    show_data_Other();
-  }
+    // Integer 2
+    case Integer_2 :
+      show_data_Integer2();
+      break;
+
+    // Integer 4
+    case Integer_4 :
+      show_data_Integer4();
+      break;
+
+    // String
+    case String :
+      show_data_String();
+      break;
+
+    // Other
+    default :
+      show_data_Other();
+
+    }
 }
 void DATA::show_data_Integer2( )const
-{
-  union Byte2{
+  {
+    union Byte2{
   public:
-    short  integer;
+      short  integer;
     Byte   byte[2];
   };
 
@@ -377,7 +382,7 @@ void DATA::show_data_Integer4( )const
   };
 
   Byte4 data;
- 
+
   for( auto i=Data_list_.begin(); i!=Data_list_.end(); ){
     for( int j=3; j>=0; j--,i++){
       data.byte[j] = (*i);
@@ -430,7 +435,7 @@ void DATA::read_gdsii( std::ifstream& file )
   put_size( RecordHeader[0], RecordHeader[1] );
   put_name( RecordHeader[2] );
   put_type( RecordHeader[3] );
-  
+
   // Data
   int size = get_size();
   for( int i=0; i<size; ++i ){
@@ -457,7 +462,7 @@ void DATA::read_gdsii( std::ifstream& file )
 }
 
 /* -------- *
- *|  make  |* 
+ *|  make  |*
  * -------- */
 /*
 // size //
@@ -626,6 +631,10 @@ void DATA::make_data_CenterMiddle( )
 /* ------- *
  *|  put  |*
  * ------- */
+void EL::put_ENDEL( DATA&& data )
+{
+  EL_end_ =  std::move(data);
+}
 void EL::put_DATA( DATA&& data )
 {
   EL_list_.push_back( std::move(data) );
@@ -660,43 +669,44 @@ void EL::print( )const
  * --------- */
 void EL::parse_gdsii( DATA&& gds )
 {
-  switch( gds.get_record() ){
+  switch( gds.get_record() )
+    {
 
-  // BOUNDARY  (0x08)
-  case Record_type::BOUNDARY :
-    EL_bgn_ = std::move(gds);
-    break;
+    // BOUNDARY  (0x08)
+    case Record_type::BOUNDARY :
+      EL_bgn_ = std::move(gds);
+      break;
 
-  // PATH  (0x09)
-  case Record_type::PATH :
-    EL_bgn_ = std::move(gds);
-    break;
-    
-  // SREF  (0x0a)
-  case Record_type::SREF :
-    EL_bgn_ = std::move(gds);
-    break;
+    // PATH  (0x09)
+    case Record_type::PATH :
+      EL_bgn_ = std::move(gds);
+      break;
 
-  // AREF  (0x0b)
-  case Record_type::AREF :
-    EL_bgn_ = std::move(gds);
-    break;
+    // SREF  (0x0a)
+    case Record_type::SREF :
+      EL_bgn_ = std::move(gds);
+      break;
 
-  // TEXT  (0x0c)
-  case Record_type::TEXT :
-    EL_bgn_ = std::move(gds);
-    break;
+      // AREF  (0x0b)
+    case Record_type::AREF :
+      EL_bgn_ = std::move(gds);
+      break;
 
-  // ENDEL  (0x11)
-  case Record_type::ENDEL :
-    EL_end_ = std::move(gds);
-    break;
+    // TEXT  (0x0c)
+    case Record_type::TEXT :
+      EL_bgn_ = std::move(gds);
+      break;
 
-  // OTHER
-  default : 
-    EL_list_.push_back( std::move(gds) );
+    // ENDEL  (0x11)
+    case Record_type::ENDEL :
+      EL_end_ = std::move(gds);
+      break;
 
-  }
+    // OTHER
+    default :
+      EL_list_.push_back( std::move(gds) );
+
+    }
 }
 
 /* --------- *
@@ -705,15 +715,15 @@ void EL::parse_gdsii( DATA&& gds )
 void EL::write_gdsii( std::ofstream& file )const
 {
   EL_bgn_.write_gdsii( file );
- 
-  for( auto& gds : EL_list_ ){ gds.write_gdsii( file ); } 
+
+  for( auto& gds : EL_list_ ){ gds.write_gdsii( file ); }
 
   EL_end_.write_gdsii( file );
 }
 
 //
 //  GDS::STR
-// 
+//
 /* ------- *
  *|  put  |*
  * ------- */
@@ -738,11 +748,11 @@ std::string STR::get_name( )const
  *|  Print  |*
  * --------- */
 void STR::print( )const
-{ 
+{
   STR_bgn_.print( );
   STR_name_.print( );
-  
-  for( auto& gds : STR_list_ ){ gds.print( ); } 
+
+  for( auto& gds : STR_list_ ){ gds.print( ); }
 
   STR_end_.print( );
 }
@@ -752,52 +762,59 @@ void STR::print( )const
  * --------- */
 void STR::parse_gdsii( DATA&& gds )
 {
-  switch( gds.get_record() ){
+  switch( gds.get_record() )
+    {
 
   // BGNSTR  (0x05)
-  case Record_type::BGNSTR :
-    STR_bgn_ = std::move(gds);
-    break;  
+    case Record_type::BGNSTR :
+      STR_bgn_ = std::move(gds);
+      break;
 
   // STRNAME (0x06)
-  case Record_type::STRNAME :
-    STR_name_ = std::move(gds);
-    break;  
+    case Record_type::STRNAME :
+      STR_name_ = std::move(gds);
+      break;
 
   // ENDSTR  (0x07)
-  case Record_type::ENDSTR :
-    STR_end_ = std::move(gds);
-    break;
+    case Record_type::ENDSTR :
+      STR_end_ = std::move(gds);
+      break;
 
   // BOUNDARY  (0x08)
-  case Record_type::BOUNDARY :
-    STR_list_.emplace_back( std::move(gds) );
-    break;
+    case Record_type::BOUNDARY :
+      STR_list_.emplace_back( std::move(gds) );
+      break;
 
   // PATH  (0x09)
-  case Record_type::PATH :
-    STR_list_.emplace_back( std::move(gds) );
-    break;
+    case Record_type::PATH :
+      STR_list_.emplace_back( std::move(gds) );
+      break;
 
   // SREF  (0x0a)
-  case Record_type::SREF :
-    STR_list_.emplace_back( std::move(gds) );
-    break;
+    case Record_type::SREF :
+      STR_list_.emplace_back( std::move(gds) );
+      break;
 
   // AREF  (0x0b)
-  case Record_type::AREF :
-    STR_list_.emplace_back( std::move(gds) );
-    break;
-    
+    case Record_type::AREF :
+      STR_list_.emplace_back( std::move(gds) );
+      break;
+
   // TEXT  (0x0c)
-  case Record_type::TEXT  :
-    STR_list_.emplace_back( std::move(gds) );
-    break;
+    case Record_type::TEXT  :
+      STR_list_.emplace_back( std::move(gds) );
+      break;
+
+  // ENDEL
+    case Record_type::ENDEL  :
+      STR_list_.back().put_ENDEL( std::move(gds) );
+      break;
 
   // OTHER
-  default :
-    STR_list_.push_back( std::move(gds) );
-  }
+    default :
+      STR_list_.back().put_DATA( std::move(gds) );
+
+    }
 }
 
 /* --------- *

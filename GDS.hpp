@@ -21,7 +21,7 @@ namespace GDS {
 
 //
 //  GDS::Record_type
-// 
+//
 enum Record_type : char  // ( Data_type )
 {
   HEADER      =0x00,  // ( INTEGER2 )
@@ -255,13 +255,13 @@ class EL
   /* ------------------ *
    *|  Copy Construct  |*
    * ------------------ */
-  EL(const EL&)=default;           
-  EL& operator=(const EL&)=default;  
+  EL(const EL&)=default;
+  EL& operator=(const EL&)=default;
 
   /* ------------------ *
    *|  Move Construct  |*
    * ------------------ */
-  EL(EL&&)=default;           
+  EL(EL&&)=default;
   EL& operator=(EL&&)=default;
 
   /* ------------------- *
@@ -274,6 +274,7 @@ class EL
   /* ------- *
    *|  put  |*
    * ------- */
+  void put_ENDEL( DATA&& );
   void put_DATA( DATA&& );
   void put_DATA( std::vector<DATA>&& );
 
@@ -295,7 +296,7 @@ class EL
   /* --------- *
    *|  parse  |*
    * --------- */
-  void parse_gdsii( DATA&& ); 
+  void parse_gdsii( DATA&& );
 
   /* --------- *
    *|  Write  |*
@@ -305,15 +306,15 @@ class EL
 
 //
 //  GDS::STR
-// 
+//
 class STR
 {
  private:
   DATA                 STR_bgn_;     // Record_type == BGNSTR
   DATA                 STR_name_;    // Record_type == STRNAME
-  std::vector<EL>      STR_list_;    // 
+  std::vector<EL>      STR_list_;    //
   DATA                 STR_end_;     // Record_type == ENDSTR
-  // 
+  //
 
  public:
   /* ------------------------ *
