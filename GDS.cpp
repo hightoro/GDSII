@@ -1,6 +1,6 @@
 /*|=====================================
- *|  Copyright (c) 2011-2013 hightoro 
- *|  All rights reserved                          
+ *|  Copyright (c) 2011-2013 hightoro
+ *|  All rights reserved
  *|=====================================
  */
 
@@ -22,7 +22,7 @@ namespace GDS {
 //
 
 /* ------- *
- *|  put  |* 
+ *|  put  |*
  * ------- */
 void DATA::put_name( Record_type name )
 {
@@ -105,95 +105,95 @@ std::string DATA::get_name( )const
     case 0x00:
       name_string = "HEADER";
       break;
-      
+
     case 0x01:
       name_string = "BGNLIB";
       break;
-      
+
     case 0x02:
       name_string = "LIBNAME";
       break;
-      
+
     case 0x03:
       name_string = "UNITS";
       break;
-      
+
     case 0x04:
       name_string = "ENDLIB";
       break;
-      
+
     case 0x05:
       name_string = "BGNSTR";
       break;
-      
+
     case 0x06:
       name_string = "STRNAME";
       break;
-      
+
     case 0x07:
       name_string = "ENDSTR";
       break;
-      
+
     case 0x08:
       name_string = "BOUNDARY[EL]";
       break;
-      
+
     case 0x09:
       name_string = "PATH[EL]";
       break;
-      
+
     case 0x0a:
       name_string = "SREF[EL]";
       break;
 
     case 0x0b:
       name_string = "AREF[EL]";
-      break;      
+      break;
 
     case 0x0c:
       name_string = "TEXT[EL]";
       break;
-      
+
     case 0x0d:
       name_string = "LAYER";
       break;
-      
+
     case 0x0e:
       name_string = "DATATYPE";
       break;
-      
+
     case 0x10:
       name_string = "XY";
       break;
-      
+
     case 0x11:
       name_string = "ENDEL";
       break;
-      
+
     case 0x12:
       name_string = "SNAME";
       break;
-      
+
     case 0x16:
       name_string = "TEXTTYPE";
       break;
-      
+
     case 0x17:
       name_string = "PRESENTATION";
       break;
-      
+
     case 0x19:
       name_string = "STRING";
       break;
-      
+
     case 0x1a:
       name_string = "STRANS";
       break;
-     
+
     case 0x1b:
       name_string = "MAG";
       break;
- 
+
     default:
       name_string = "UNKNOWN";
     }
@@ -209,31 +209,31 @@ std::string DATA::get_type( )const
     case 0x00:
       type_string = "No_Data";
       break;
-      
+
     case 0x01:
       type_string = "BitArray";
       break;
-      
+
     case 0x02:
       type_string = "Integer_2";
       break;
-      
+
     case 0x03:
       type_string = "Integer_4";
       break;
-      
+
     case 0x04:
       type_string = "Real_4";
       break;
-      
+
     case 0x05:
       type_string = "Real_8";
       break;
-      
+
     case 0x06:
       type_string = "String";
       break;
-      
+
     default:
       type_string = "UNKNOWN";
     }
@@ -269,7 +269,7 @@ std::vector<int> DATA::get_data_Integer4( )const
   };
 
   std::vector<int> value_list;
- 
+
   for( auto i=Data_list_.begin(); i!=Data_list_.end(); ){
     Byte4 data;
     for( int j=3; j>=0; j--,i++){
@@ -278,6 +278,36 @@ std::vector<int> DATA::get_data_Integer4( )const
     value_list.push_back(std::move(data.integer));
   }
 
+  return std::move(value_list);
+}
+std::vector<double> DATA::get_data_Real8( )const
+{
+  union Byte8{
+  public:
+    long long integer;
+    Byte      byte[8];
+  };
+
+  std::vector<double> value_list;
+
+  for( auto i=Data_list_.begin(); i!=Data_list_.end(); ){
+    Byte8 data;
+    Byte  data7 = (*i);   i++;
+
+    data.byte[7] = 0x00;
+    for( int j=6; j>=0; j--,i++){
+      data.byte[j] = (*i);
+    }
+
+    bool   sign  = 0x80 & data7; // std::cerr << "sign = " << sign << std::endl;
+    int    expo  = 0x7f & data7; // std::cerr << "expo = " << expo << std::endl;
+    double value = data.integer; // std::cerr << "val  = " << value << std::endl;
+
+    value /= pow(16,(14-(expo-64)));
+    value = (sign) ? (-1.0*value) : value;
+
+    value_list.push_back(std::move(value));
+  }
   return std::move(value_list);
 }
 std::string DATA::get_data_String( )const
@@ -334,17 +364,22 @@ void DATA::show_data( )const
     {
 
     // Integer 2
-    case Integer_2 :
+    case Data_type::Integer_2 :
       show_data_Integer2();
       break;
 
     // Integer 4
-    case Integer_4 :
+    case Data_type::Integer_4 :
       show_data_Integer4();
       break;
 
+    // Real 8
+    case Data_type::Real_8 :
+      show_data_Real8();
+      break;
+
     // String
-    case String :
+    case Data_type::String :
       show_data_String();
       break;
 
@@ -368,8 +403,8 @@ void DATA::show_data_Integer2( )const
     for( int j=1; j>=0; j--,i++){
       data.byte[j] = (*i);
     }
-    //std::cout << boost::format("[%4d]")%(data.integer) << std::flush;
-    std::cout << "[" << data.integer << "]" << std::flush;
+    std::cout << boost::format("[%4d]")%(data.integer) << std::flush;
+    //std::cout << "[" << data.integer << "]" << std::flush;
   }
 
 }
@@ -387,8 +422,47 @@ void DATA::show_data_Integer4( )const
     for( int j=3; j>=0; j--,i++){
       data.byte[j] = (*i);
     }
-    //std::cout << boost::format("[%4d]")%(data.integer) << std::flush;
-    std::cout << "[" << data.integer << "]" << std::flush;
+    std::cout << boost::format("[%4d]")%(data.integer) << std::flush;
+    //std::cout << "[" << data.integer << "]" << std::flush;
+  }
+}
+void DATA::show_data_Real8( )const
+{
+  // SEEE_EEEE MMMM_MMMM MMMM_MMMM MMMM_MMMM
+  // MMMM_MMMM MMMM_MMMM MMMM_MMMM MMMM_MMMM
+
+  // EEE_EEEE = 100_0000 => M(3byte) / (2^4^(14-0))
+  // EEE_EEEE = 100_0001 => M(3byte) / (2^4^(14-1))
+  // EEE_EEEE = 100_0010 => M(3byte) / (2^4^(14-2))
+
+  union Byte8{
+  public:
+    long long integer;
+    Byte      byte[8];
+  };
+
+  std::vector<double> value_list;
+
+  for( auto i=Data_list_.begin(); i!=Data_list_.end(); ){
+    Byte8 data;
+    Byte  data7 = (*i);   i++;
+
+    data.byte[7] = 0x00;
+    for( int j=6; j>=0; j--,i++){
+      data.byte[j] = (*i);
+    }
+
+    bool   sign  = 0x80 & data7; // std::cerr << "sign = " << sign << std::endl;
+    int    expo  = 0x7f & data7; // std::cerr << "expo = " << expo << std::endl;
+    double value = data.integer; // std::cerr << "val  = " << value << std::endl;
+
+    value /= pow(16,(14-(expo-64)));
+    value = (sign) ? (-1.0*value) : value;
+
+    if( value >= 0.001 )
+      std::cout << boost::format("[%4.3f]")%(value) << std::flush;
+    else
+      std::cout << boost::format("[%3.2e]")%(value) << std::flush;
   }
 }
 void DATA::show_data_String( )const
@@ -400,7 +474,8 @@ void DATA::show_data_String( )const
 void DATA::show_data_Other( )const
 {
   for( auto& data : Data_list_ ){
-    std::cout << ((0xff)&(data)) << " " << std::flush;
+    std::cout << boost::format("%02x ")%( (0xff)&(data) ) << std::flush;
+    //std::cout << ((0xff)&(data)) << " " << std::flush;
   }
 }
 
@@ -851,13 +926,14 @@ void STR::make_TEXT( const string& pname, short layer, short type, const string&
 
 //
 //  GDS::LIB
-// 
+//
+ 
 /* ------- *
  *|  put  |*
  * ------- */
 void LIB::put_version( short ver )
 {
-  LIB_hdr_ = product_HEADER(ver); 
+  LIB_hdr_ = product_HEADER(ver);
 }
 void LIB::put_name( const std::string& name )
 {

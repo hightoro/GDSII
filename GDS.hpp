@@ -1,6 +1,6 @@
 /*|=====================================
- *|  Copyright (c) 2011-2013 hightoro 
- *|  All rights reserved                          
+ *|  Copyright (c) 2011-2013 hightoro
+ *|  All rights reserved
  *|=====================================
  */
 #ifndef CLASS_GDS_H
@@ -20,9 +20,14 @@ namespace GDS {
 
 
 //
+//  GDS::Byte
+//
+typedef char Byte;
+
+//
 //  GDS::Record_type
 //
-enum Record_type : char  // ( Data_type )
+enum Record_type : Byte  // ( Data_type )
 {
   HEADER      =0x00,  // ( INTEGER2 )
   BGNLIB      =0x01,  // ( INTEGER2 )
@@ -60,8 +65,8 @@ enum Record_type : char  // ( Data_type )
 
 //
 //  GDS::Data_type
-// 
-enum Data_type : char
+//
+enum Data_type : Byte
 {
   NoData    =0x00,
   BitArray  =0x01,
@@ -72,12 +77,6 @@ enum Data_type : char
   String    =0x06,
   DATA_UNKNOWN =0x79,
 };
-
-//
-//  GDS::Byte
-// 
-typedef char Byte;
-typedef std::basic_ifstream<Byte> byte_ifstream;
 
 //
 //  GDS::DATA
@@ -137,7 +136,7 @@ class DATA
     RecordHeader_type_()
   { read_gdsii(file); }
 
-  /*  
+  /*
   DATA( const std::vector<Byte>& data_list ):
     RecordHeader_size1_(),
     RecordHeader_size2_(),
@@ -154,6 +153,8 @@ class DATA
   void put_type( Data_type );
   void put_data_Integer2( short );
   void put_data_Integer4( int );
+  void put_data_Real4( double );
+  void put_data_Real8( double );
   void put_data_String( const std::string& );
 
   void put_size( Byte, Byte );
@@ -168,9 +169,10 @@ class DATA
   short       get_size( )const;
   std::string get_name( )const;
   std::string get_type( )const;
-  std::vector<short> get_data_Integer2( )const;
-  std::vector<int> get_data_Integer4( )const;
-  std::string get_data_String( )const;
+  std::vector<short>  get_data_Integer2( )const;
+  std::vector<int>    get_data_Integer4( )const;
+  std::vector<double> get_data_Real8( )const;
+  std::string         get_data_String( )const;
 
   /* --------- *
    *|  other  |*
@@ -186,6 +188,7 @@ class DATA
   void show_data( )const;
   void show_data_Integer2( )const;
   void show_data_Integer4( )const;
+  void show_data_Real8( )const;
   void show_data_String( )const;
   void show_data_Other( )const;
 
@@ -233,8 +236,8 @@ class EL
 {
  private:
   DATA                EL_bgn_;    // Record_type == BOUNDARY,PATH,TEXT,SREF,AREF
-  std::vector<DATA>   EL_list_;   // 
-  DATA                EL_end_;    // Record_type == ENDEL  
+  std::vector<DATA>   EL_list_;   //
+  DATA                EL_end_;    // Record_type == ENDEL 
   //
   //  Records of Entities Within of Structure
   //    BOUNDARY [LAYER,DATATYPE]
