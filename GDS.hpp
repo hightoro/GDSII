@@ -104,8 +104,8 @@ class DATA
   /* ------------------ *
    *|  Copy Construct  |*
    * ------------------ */
-  DATA( const DATA& cp )=default;
-  DATA& operator=( const DATA& cp )=default;
+  DATA(const DATA&)=default;
+  DATA& operator=(const DATA&)=default;
  
   /* ------------------- *
    *|  Other Construct  |*
@@ -262,8 +262,8 @@ class STR
   /* ------------------ *
    *|  Copy Construct  |*
    * ------------------ */
-  STR( const STR& cp )=default;           
-  STR& operator=( const STR& cp )=default;  
+  STR(const STR&)=default;           
+  STR& operator=(const STR&)=default;  
 
   /* ------------------- *
    *|  Other Construct  |*
@@ -356,8 +356,8 @@ public:
   /* ------------------ *
    *|  Copy Construct  |*
    * ------------------ */
-  LIB( const LIB& cp )  =default;          // Copy Construct
-  LIB& operator=( const LIB& cp )=default; // Copy Construc
+  LIB(const LIB&)  =default;          // Copy Construct
+  LIB& operator=(const LIB&)=default; // Copy Construc
 
   /* ------------------- *
    *|  Other Construct  |*
